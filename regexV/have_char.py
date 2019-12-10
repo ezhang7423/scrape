@@ -21,23 +21,23 @@ courses_html = get_all_course_regex.findall(home_html)
 urls = get_course_url_regex.findall(courses_html[0])
 result = []
 for url in urls:
-    course_html = requests.get("https://cs.ucsb.edu" + url).content.replace("\n", "")
+    course_html = requests.get("https://cs.ucsb.edu" +url)).content.replace("\n", "")
     title = get_title_regex.findall(course_html)[0]
     num = get_num_regex.findall(course_html)[0]
     try:
         level = get_level_regex.findall(course_html)[0]
     except IndexError:
-        print url
+        print(url)
         level = "error"
     try:
         unit = get_unit_regex.findall(course_html)[0]
     except IndexError:
-        print url
+        print(url)
         unit = "0"
     try:
         desc = get_desc_regex.findall(course_html)[0]
     except IndexError:
-        print url
+        print(url)
         desc = "none"
     result.append({
         "title": title.replace("                  ", "").replace("                 ", ""),
@@ -49,4 +49,4 @@ for url in urls:
         }
     })
 
-print(result)
+print((result))
