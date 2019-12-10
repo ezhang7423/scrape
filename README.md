@@ -1,6 +1,2 @@
 # scrape
-scraping with puppeteer
-
-
-
-and optionally( python 3, beautifulsoup, urllib2)
+scraping with selenium v1 & urllib/beauitful soup v2
