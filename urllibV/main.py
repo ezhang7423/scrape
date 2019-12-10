@@ -1,28 +1,28 @@
-import requests
+import urllib.request
 from bs4 import BeautifulSoup
 import json
 import unicodedata
 
-
-session = requests.Session()
-url = 'https://cs.ucsb.edu/education/courses/descriptions'
-headers = {'Accept-Encoding': 'identity'}
-r = requests.get(url, headers=headers)
-
-decoded_content = ""
-for line in r.iter_lines():
-    if line:
-        decoded_line = line.decode('utf-8')
-        decoded_content += decoded_line
-
-
+r = urllib.request.urlopen('https://cs.ucsb.edu/education/courses/descriptions')
+decoded_content = r.read()
 soup = BeautifulSoup(decoded_content, 'html.parser')
-
 table = (soup.tbody.prettify())
-soup = BeautifulSoup(table)
+soup = BeautifulSoup(table, 'html.parser')
+scrapedInfo = {}
 
-links = []
 for link in soup.find_all('a'):
-    links.append(link.get('href'))
+    r = urllib.request.urlopen('https://cs.ucsb.edu'+link.get('href'))
+    soup = BeautifulSoup(r.read(), 'html.parser')
+    contentName = soup.find(id='content').find('div', recursive = False).find('div', recursive = False).find('div', recursive = False)
+    try:
+        key = contentName.get_text().split(' ')[1]
+    except IndexError:
+        key = contentName.get_text()[8:]
+    key = 'CS'+key.strip(',')
+    scrapedInfo[key] = {'title': soup.find(id = 'page-title').get_text(), 'desc': soup.find(id = 'block-system-main').prettify()}
+    print(soup.find(id = 'page-title').get_text())
+    print(soup.find(id = 'block-system-main').prettify())
 
-print(links)
+fout = open('info.json', 'w')
+fout.write(json.dumps(scrapedInfo))
+fout.close()
